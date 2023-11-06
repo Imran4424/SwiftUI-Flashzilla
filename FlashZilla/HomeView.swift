@@ -16,10 +16,13 @@ extension View {
 
 struct HomeView: View {
     @Environment(\.accessibilityDifferentiateWithoutColor) var differentiateWithoutColor
+    @Environment(\.scenePhase) var scephase
+    
     @State private var cards = Array<Card>(repeating: Card.example, count: 10)
     
     @State private var timeRemaining = 100
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    @State private var isActive = true
     
     var body: some View {
         ZStack {
@@ -73,7 +76,16 @@ struct HomeView: View {
         }
         .onReceive(timer) { time in
             if timeRemaining > 0 {
-                timeRemaining -= 1
+                if isActive {
+                    timeRemaining -= 1
+                }
+            }
+        }
+        .onChange(of: scephase) { oldPhase, newPhase in
+            if newPhase == .active {
+                isActive = true
+            } else {
+                isActive = false
             }
         }
     }
