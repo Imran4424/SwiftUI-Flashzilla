@@ -50,6 +50,17 @@ struct HomeView: View {
                     }
                 }
                 .allowsHitTesting(timeRemaining > 0)
+                
+                if cards.isEmpty {
+                    Spacer()
+                        .frame(height: 25)
+                    
+                    Button("Start Again", action: resetCards)
+                        .padding()
+                        .background(.white)
+                        .foregroundStyle(.black)
+                        .clipShape(Capsule())
+                }
             }
             
             if differentiateWithoutColor {
@@ -84,7 +95,9 @@ struct HomeView: View {
         }
         .onChange(of: scephase) { oldPhase, newPhase in
             if newPhase == .active {
-                isActive = true
+                if !cards.isEmpty {
+                    isActive = true
+                }
             } else {
                 isActive = false
             }
@@ -95,6 +108,16 @@ struct HomeView: View {
 extension HomeView {
     func removeCard(at index: Int) {
         cards.remove(at: index)
+        
+        if cards.isEmpty {
+            isActive = false
+        }
+    }
+    
+    func resetCards() {
+        cards = Array(repeating: Card.example, count: 10)
+        timeRemaining = 100
+        isActive = true
     }
 }
 
