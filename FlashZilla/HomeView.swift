@@ -18,6 +18,9 @@ struct HomeView: View {
     @Environment(\.accessibilityDifferentiateWithoutColor) var differentiateWithoutColor
     @State private var cards = Array<Card>(repeating: Card.example, count: 10)
     
+    @State private var timeRemaining = 100
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    
     var body: some View {
         ZStack {
             Image("background")
@@ -25,6 +28,14 @@ struct HomeView: View {
                 .ignoresSafeArea()
             
             VStack {
+                Text("Time: \(timeRemaining)")
+                    .font(.largeTitle)
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 5)
+                    .background(.black.opacity(0.75))
+                    .clipShape(Capsule())
+                
                 ZStack {
                     ForEach(0..<cards.count, id: \.self) { index in
                         CardView(card: cards[index]) {
@@ -36,28 +47,33 @@ struct HomeView: View {
                     }
                 }
             }
-        }
-        
-        if differentiateWithoutColor {
-            VStack {
-                Spacer()
-                
-                HStack {
-                    Image(systemName: "xmark.circle")
-                        .padding()
-                        .background(.black.opacity(0.7))
-                        .clipShape(Circle())
-                    
+            
+            if differentiateWithoutColor {
+                VStack {
                     Spacer()
                     
-                    Image(systemName: "checkmark.circle")
-                        .padding()
-                        .background(.black.opacity(0.7))
-                        .clipShape(Circle())
+                    HStack {
+                        Image(systemName: "xmark.circle")
+                            .padding()
+                            .background(.black.opacity(0.7))
+                            .clipShape(Circle())
+                        
+                        Spacer()
+                        
+                        Image(systemName: "checkmark.circle")
+                            .padding()
+                            .background(.black.opacity(0.7))
+                            .clipShape(Circle())
+                    }
+                    .foregroundStyle(.white)
+                    .font(.largeTitle)
+                    .padding()
                 }
-                .foregroundStyle(.white)
-                .font(.largeTitle)
-                .padding()
+            }
+        }
+        .onReceive(timer) { time in
+            if timeRemaining > 0 {
+                timeRemaining -= 1
             }
         }
     }
