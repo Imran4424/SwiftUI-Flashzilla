@@ -15,6 +15,8 @@ struct CardView: View {
     @State private var isShowingAnswer = false
     @State private var offset = CGSize.zero
     
+    @State private var feedback = UINotificationFeedbackGenerator()
+    
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 25.0, style: .continuous)
@@ -54,9 +56,18 @@ struct CardView: View {
             DragGesture()
                 .onChanged{ gesture in
                     offset = gesture.translation
+                    feedback.prepare()
                 }
                 .onEnded{ _ in
                     if abs(offset.width) > 100 {
+                        // feedback
+                        if offset.width > 0 {
+                            // commenting out cause too much haptic is bad
+//                            feedback.notificationOccurred(.success)
+                        } else {
+                            feedback.notificationOccurred(.error)
+                        }
+                        
                         // remove the card
                         removal?()
                     } else {
