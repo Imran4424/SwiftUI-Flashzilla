@@ -19,7 +19,7 @@ struct HomeView: View {
     @Environment(\.scenePhase) var scephase
     @Environment(\.accessibilityVoiceOverEnabled) var voiceOverEnabled
     
-    @State private var cards = Array<Card>(repeating: Card.example, count: 10)
+    @State private var cards = [Card]()
     
     @State private var timeRemaining = 100
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -143,6 +143,10 @@ struct HomeView: View {
                 isActive = false
             }
         }
+        .sheet(isPresented: $showingEditScreen, onDismiss: resetCards) {
+            EditCardView()
+        }
+        .onAppear(perform: resetCards)
     }
 }
 
@@ -161,9 +165,23 @@ extension HomeView {
     }
     
     func resetCards() {
-        cards = Array(repeating: Card.example, count: 10)
+        loadData()
         timeRemaining = 100
         isActive = true
+    }
+    
+    func loadData() {
+        guard let data = UserDefaults.standard.data(forKey: "Cards") else {
+            print("data reading from user defualt failed")
+            return
+        }
+        
+        guard let decoded = try? JSONDecoder().decode([Card].self, from: data) else {
+            print("data decoding failed of type [Card]")
+            return
+        }
+        
+        cards = decoded
     }
 }
 
