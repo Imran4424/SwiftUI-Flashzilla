@@ -63,6 +63,10 @@ struct CardView: View {
         .gesture(
             DragGesture()
                 .onChanged{ gesture in
+//                    withAnimation {
+//                        offset = gesture.translation
+//                    }
+                    
                     offset = gesture.translation
                     feedback.prepare()
                 }
@@ -79,6 +83,9 @@ struct CardView: View {
                         // remove the card
                         removal?()
                     } else {
+//                        withAnimation {
+//                            offset = .zero
+//                        }
                         offset = .zero
                     }
                 }
@@ -86,6 +93,7 @@ struct CardView: View {
         .onTapGesture {
             isShowingAnswer.toggle()
         }
+        .animation(.spring(), value: offset)
     }
 }
 
